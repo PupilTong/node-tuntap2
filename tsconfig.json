@@ -1,0 +1,15 @@
+{
+    "compilerOptions": {
+      "module": "commonjs",
+      "target": "es2015",
+      "noImplicitAny": true,
+      "removeComments": true,
+      "preserveConstEnums": true,
+      "sourceMap": true,
+      "isolatedModules": true,
+      "types": ["node"],
+      "typeRoots": ["./node_modules/@types"]
+    },
+    "include": ["src/js/*","index.ts"],
+    "exclude": ["node_modules", "**/*.spec.ts"],
+}

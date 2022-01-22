@@ -26,7 +26,7 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
-    - run: sudo npm install -g nyc
-    - run: sudo npm ci
-    - run: sudo npm run build --if-present
-    - run: sudo npm test
+    - run: npm install -g nyc
+    - run: npm ci
+    - run: npm run build --if-present
+    - run: npm test

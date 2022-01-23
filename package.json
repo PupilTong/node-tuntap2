@@ -8,7 +8,8 @@
     "install": "prebuild-install --runtime napi --tag-prefix '' || node-gyp rebuild || tsc",
     "build": "node-gyp rebuild && tsc",
     "build:dev": "node-gyp rebuild --debug",
-    "test": "sudo nyc mocha tests/*"
+    "test": "sudo mocha tests/*",
+    "coverage": "sudo nyc mocha tests/*"
   },
   "author": "pupiltong",
   "license": "Apache-2.0",

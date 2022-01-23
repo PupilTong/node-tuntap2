@@ -18,12 +18,34 @@ class tuntap {
         this._deviceMode = mode;
         this._fd = fs.openSync(`/dev/net/tun`, "r+");
         this._ifName = tuntap2Addon_1.default.tuntapInit(this._fd, mode == "tap");
+        this._writingStream = fs.createWriteStream('', {
+            fd: this._fd,
+            autoClose: false,
+            emitClose: false
+        });
+        this._readingStream = fs.createReadStream('', {
+            fd: this._fd,
+            autoClose: false,
+            emitClose: false
+        });
+        this._readingStream.setEncoding('binary');
+    }
+    writePacket(packet, callback) {
+        return __awaiter(this, void 0, void 0, function* () {
+            this._writingStream.write(packet, callback);
+        });
     }
     get name() {
         return this._ifName;
     }
     get isTap() {
         return this._deviceMode == "tap";
+    }
+    get writeStream() {
+        return this._writingStream;
+    }
+    get readStream() {
+        return this._readingStream;
     }
     get isTun() {
         return !this.isTap;
@@ -89,7 +111,7 @@ class tuntap {
     ;
     release() {
         return __awaiter(this, void 0, void 0, function* () {
-            yield fs.close(this._fd);
+            this._readingStream.destroy();
         });
     }
     ;

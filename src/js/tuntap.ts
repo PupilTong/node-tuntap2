@@ -2,6 +2,7 @@ import tuntapAddon from "./tuntap2Addon";
 import * as fs from "fs";
 import * as os from "os";
 import * as jsonpath from "jsonpath";import { StreamOptions } from "stream";
+import { buffer } from "stream/consumers";
 interface Tuntap {
     readonly name: string;
     readonly isTap:boolean;
@@ -31,15 +32,17 @@ class tuntap implements Tuntap {
         this._ifName = tuntapAddon.tuntapInit(this._fd, mode == "tap");
         this._writingStream = fs.createWriteStream('',{
             fd: this._fd,
-            autoClose:false
+            autoClose:false,
+            emitClose:false
         });
         this._readingStream = fs.createReadStream('',{
             fd:this._fd,
-            autoClose:false
+            autoClose:false,
+            emitClose:false
         });
         this._readingStream.setEncoding('binary');
-        this._readingStream.on('data',(packet)=>{
-        })
+        // this._readingStream.on('data',(packet)=>{
+        // })
     }
     public async writePacket(packet:Buffer, callback:(err:Error)=>void) {
         this._writingStream.write(packet,callback);
@@ -127,7 +130,8 @@ class tuntap implements Tuntap {
         }
     };
     public async release():Promise<any> {
-        await fs.close(this._fd);
+        // await fs.close(this._fd);
+        this._readingStream.destroy();
     };
 }
 class Tap extends tuntap {

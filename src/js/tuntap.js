@@ -18,31 +18,38 @@ class tuntap {
         this._deviceMode = mode;
         this._fd = fs.openSync(`/dev/net/tun`, "r+");
         this._ifName = tuntap2Addon_1.default.tuntapInit(this._fd, mode == "tap");
-        this._writingStream = fs.createWriteStream('', {
-            fd: this._fd,
-            autoClose: false,
-            emitClose: false
-        });
         this._readingStream = fs.createReadStream('', {
             fd: this._fd,
             autoClose: false,
-            emitClose: false
+            emitClose: true
         });
         this._readingStream.setEncoding('binary');
     }
     writePacket(packet, callback) {
         return __awaiter(this, void 0, void 0, function* () {
-            this._writingStream.write(packet, callback);
+            fs.writeSync(this._fd, packet);
+            callback();
         });
+    }
+    makeSureIsUp() {
+        if (!this.isUp) {
+            throw `you must set isUp = true in order to access this method`;
+        }
+    }
+    ;
+    get onReceive() {
+        return this._onReceive;
+    }
+    set onReceive(newVal) {
+        this._onReceive = newVal;
+        this._readingStream.removeAllListeners('data');
+        this._readingStream.on('data', this.onReceive);
     }
     get name() {
         return this._ifName;
     }
     get isTap() {
         return this._deviceMode == "tap";
-    }
-    get writeStream() {
-        return this._writingStream;
     }
     get readStream() {
         return this._readingStream;
@@ -103,12 +110,6 @@ class tuntap {
         const ifIndex = tuntap2Addon_1.default.tuntapGetIfIndex(this._ifName);
         tuntap2Addon_1.default.tuntapSetIpv6(ifIndex, addr, prefix);
     }
-    makeSureIsUp() {
-        if (!this.isUp) {
-            throw `you must set isUp = true in order to access this method`;
-        }
-    }
-    ;
     release() {
         return __awaiter(this, void 0, void 0, function* () {
             this._readingStream.destroy();

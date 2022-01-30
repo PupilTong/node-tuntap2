@@ -7,54 +7,57 @@ interface Tuntap {
     readonly name: string;
     readonly isTap:boolean;
     readonly isTun:boolean;
-    readonly writeStream:fs.WriteStream;
-    readonly readStream:fs.ReadStream;
     mac: string;
     mtu: number;
     ipv4: string;
     ipv6: string;
     isUp : boolean;
+    onReceive:(packet: Buffer)=>void;
     release: () => Promise<void>;
-    writePacket:(data:Buffer,callback:(err:Error)=>void)=>Promise<void>;
+    writePacket:(data:Buffer,callback:()=>void)=>Promise<void>;
 }
 class tuntap implements Tuntap {
     _deviceMode: string;
     _fd: number;
     _ifName: string;
     _isUp:boolean = false;
-    _writingStream:fs.WriteStream;
     _readingStream:fs.ReadStream;
+    _onReceive:(packet: Buffer)=>void;
 
 
     constructor(mode: "tun" | "tap") {
         this._deviceMode = mode;
         this._fd = fs.openSync(`/dev/net/tun`, "r+");
         this._ifName = tuntapAddon.tuntapInit(this._fd, mode == "tap");
-        this._writingStream = fs.createWriteStream('',{
-            fd: this._fd,
-            autoClose:false,
-            emitClose:false
-        });
         this._readingStream = fs.createReadStream('',{
             fd:this._fd,
             autoClose:false,
-            emitClose:false
+            emitClose:true
         });
         this._readingStream.setEncoding('binary');
-        // this._readingStream.on('data',(packet)=>{
-        // })
     }
-    public async writePacket(packet:Buffer, callback:(err:Error)=>void) {
-        this._writingStream.write(packet,callback);
+    public async writePacket(packet:Buffer, callback:()=>void) {
+        fs.writeSync(this._fd,packet);
+        callback();
+    }
+    private makeSureIsUp(){
+        if(!this.isUp){
+            throw `you must set isUp = true in order to access this method`;
+        }
+    };
+    get onReceive(): (packet: Buffer)=>void {
+        return this._onReceive;
+    }
+    set onReceive(newVal) {
+        this._onReceive = newVal;
+        this._readingStream.removeAllListeners('data');
+        this._readingStream.on('data',this.onReceive);
     }
     get name(): string {
         return this._ifName;
     }
     get isTap(): boolean {
         return this._deviceMode == "tap";
-    }
-    get writeStream(): fs.WriteStream{
-        return this._writingStream;
     }
     get readStream(): fs.ReadStream{
         return this._readingStream;
@@ -124,13 +127,7 @@ class tuntap implements Tuntap {
         const ifIndex = tuntapAddon.tuntapGetIfIndex(this._ifName);
         tuntapAddon.tuntapSetIpv6(ifIndex, addr, prefix);
     }
-    private makeSureIsUp(){
-        if(!this.isUp){
-            throw `you must set isUp = true in order to access this method`;
-        }
-    };
     public async release():Promise<any> {
-        // await fs.close(this._fd);
         this._readingStream.destroy();
     };
 }

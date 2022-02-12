@@ -2,6 +2,8 @@ const { Tap, Tun } = require("..");
 const should = require("should");
 const os = require("os");
 const dgram = require("dgram");
+const jmespath = require('jmespath');
+const { type } = require("os");
 describe("Test tun creating.", function () {
     it("should successfuly creating object", function (done) {
         const tun = new Tun();
@@ -175,7 +177,7 @@ describe("test send and receive packet", function () {
     before(function () {
         tun = new Tun();
         tun.isUp = true;
-        tun.ipv4 = "4.3.2.1/24";
+        tun.ipv4 = "4.3.2.0/24";
         packet = Buffer.from([
             0x45, 0x02, 0x00, 0x54, 0x6e, 0x97, 0x00, 0x00, 0x40, 0x01, 0xf7,
             0xf2, 0x0a, 0x01, 0x00, 0x13, 0x0a, 0x00, 0x00, 0x0a, 0x08, 0x00,
@@ -195,7 +197,8 @@ describe("test send and receive packet", function () {
     it("receive packet", function (done) {
         tun.writePacket(packet, () => {});
         tun.onReceive = (chunk) => {
-            console.log(`${tun.name} - Receiver: ${chunk.length} bytes`);
+            // console.log(`${tun.name} - Receiver: ${chunk.length} bytes`);
+            tun.onReceive = ()=>{};
             done();
         }
         socket.send("hello!", 43210, '4.3.2.1', (err) => {});
@@ -207,42 +210,51 @@ describe("test send and receive packet", function () {
     });
 });
 
-describe("test send by tun and receive by node socket", function () {
-    let tun;
+describe("test send by tun and receive by another tun", function () {
+    let tun1;
+    let tun2;
     let packet;
-    let listener;
-    this.timeout(20000);
+    this.timeout(2000);
     before(function () {
-        tun = new Tun();
-        tun.isUp = true;
-        tun.ipv4 = "4.3.2.1/24";
+        tun1 = new Tun();
+        tun1.isUp = true;
+        tun1.ipv4 = "4.3.2.2/24\\";
+        tun2 = new Tun();
+        tun2.isUp = true;
+        tun2.ipv4 = "1.2.3.0/24";
         // packet = Buffer.from([
         //     0x45, 0x02, 0x00, 0x21, 0x6e, 0x97, 0x00, 0x00, 0x40, 0x11, 0x87, 0x2e, 0x04, 0x03, 0x02, 0x01,
         //     0x7f, 0x00, 0x00, 0x01, 0xe0, 0xb4, 0xa8, 0xca, 0x00, 0x0d, 0xfe, 0x20, 0x68, 0x65, 0x6c, 0x6c,
         //     0x6f
         // ]);
         packet = Buffer.from([
-        0x45, 0x00, 0x00, 0x22, 0xf6, 0x45, 0x40, 0x00, 0x40, 0x11, 0x38, 0x7e, 0x04, 0x03, 0x02, 0x01,
-        0x04, 0x03, 0x02, 0x01, 0xc6, 0xef, 0xa8, 0xca, 0x00, 0x0e, 0x0c, 0x27, 0x68, 0x65, 0x6c, 0x6c,
-        0x6f, 0x21
+            0x45, 0x00, 0x00, 0x22, 0xd5, 0xd1, 0x40, 0x00, 0x40, 0x11, 0x56,
+            0xe0, 0x0a, 0x01, 0x00, 0x13, 0x01, 0x02, 0x03, 0x04, 0x98, 0x5d,
+            0xa8, 0xca, 0x00, 0x0e, 0x0e, 0x39, 0x68, 0x65, 0x6c, 0x6c, 0x6f,
+            0x21
         ]);
     });
     it("test message 'hello!' ", function (done) {
-        listener = dgram.createSocket("udp4", (msg, info) => {
-            console.log(msg.toString("utf8"));
-            done();
-        });
-        listener.bind({
-            address:'0.0.0.0',
-            port: 43210
-        });
-        setTimeout(function(packet,tun){
-            
-            tun.writePacket(packet, () => {});
-        },100,packet,tun);
+        /*
+            must enable ipv4 forwarding in os
+            1. iptables -L  or iptables -P FORWARD ACCEPT
+            2. sysctl net.ipv4.ip_forward=1
+        */
+        tun2.onReceive = (buf)=>{
+            const isEqual = buf.reduce((perv, curr, index)=>{
+                if(index>=packet.length)return false;
+                // console.log(`${curr},${packet[index]},index: ${index}`);
+                return (perv==1) && ((curr == packet[index]) 
+                    || index === 8 //skip TTL
+                    || index === 10 || index === 11 //skip checksum
+                );
+            },1);
+            if(isEqual)done();
+        };
+        tun1.writePacket(packet,()=>{});
     });
     after(function () {
-        tun.release();
-        listener.close();
+        tun1.release();
+        tun2.release();
     });
 });

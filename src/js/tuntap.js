@@ -11,24 +11,22 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 const tuntap2Addon_1 = require("./tuntap2Addon");
 const fs = require("fs");
 const os = require("os");
-const jsonpath = require("jsonpath");
+const jmespath = require("jmespath");
 class tuntap {
     constructor(mode) {
         this._isUp = false;
         this._deviceMode = mode;
         this._fd = fs.openSync(`/dev/net/tun`, "r+");
         this._ifName = tuntap2Addon_1.default.tuntapInit(this._fd, mode == "tap");
-        this._readingStream = fs.createReadStream('', {
+        this._readingStream = fs.createReadStream("", {
             fd: this._fd,
             autoClose: false,
-            emitClose: true
+            emitClose: true,
         });
-        this._readingStream.setEncoding('binary');
     }
     writePacket(packet, callback) {
         return __awaiter(this, void 0, void 0, function* () {
-            fs.writeSync(this._fd, packet);
-            callback();
+            fs.write(this._fd, packet, callback);
         });
     }
     makeSureIsUp() {
@@ -36,23 +34,19 @@ class tuntap {
             throw `you must set isUp = true in order to access this method`;
         }
     }
-    ;
     get onReceive() {
         return this._onReceive;
     }
     set onReceive(newVal) {
         this._onReceive = newVal;
-        this._readingStream.removeAllListeners('data');
-        this._readingStream.on('data', this.onReceive);
+        this._readingStream.removeAllListeners("data");
+        this._readingStream.on("data", this.onReceive);
     }
     get name() {
         return this._ifName;
     }
     get isTap() {
         return this._deviceMode == "tap";
-    }
-    get readStream() {
-        return this._readingStream;
     }
     get isTun() {
         return !this.isTap;
@@ -72,7 +66,7 @@ class tuntap {
     get mac() {
         this.makeSureIsUp();
         const ifInfo = os.networkInterfaces();
-        const mac = jsonpath.query(ifInfo, `$.${this._ifName}[?(@.mac)].mac`)[0];
+        const mac = jmespath.search(ifInfo, `${this._ifName}[*].[mac]|[0]`);
         return mac;
     }
     get mtu() {
@@ -84,7 +78,7 @@ class tuntap {
     get ipv4() {
         this.makeSureIsUp();
         const ifInfo = os.networkInterfaces();
-        return jsonpath.query(ifInfo, `$.${this._ifName}[?(@.family=='IPv4')].cidr`)[0];
+        return jmespath.search(ifInfo, `${this._ifName}[?family=='IPv4'].cidr|[0]`);
     }
     set ipv4(ip) {
         const cirdArray = ip.split("/");
@@ -98,7 +92,7 @@ class tuntap {
     get ipv6() {
         this.makeSureIsUp();
         const ifInfo = os.networkInterfaces();
-        return jsonpath.query(ifInfo, `$.${this._ifName}[?(@.family=='IPv6')].cidr`)[0];
+        return jmespath.search(ifInfo, `${this._ifName}[?family=='IPv6'].cidr|[0]`);
     }
     set ipv6(ip) {
         const cirdArray = ip.split("/");
@@ -115,7 +109,6 @@ class tuntap {
             this._readingStream.destroy();
         });
     }
-    ;
 }
 class Tap extends tuntap {
     constructor() {

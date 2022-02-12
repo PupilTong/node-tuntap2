@@ -28,6 +28,8 @@ jobs:
           node-version: 16
           registry-url: https://registry.npmjs.org/
       - run: npm ci
+      - run: git config --global user.email "pupiltong@github.com"
+      - run: git config --global user.name "pupilTong"
       - run: npm version ${{github.event.release.tag_name}} 
       - run: npm publish
         env:

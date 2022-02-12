@@ -2,6 +2,10 @@
 
 a opensource, asynchronized, napi-based, business friendly tuntap device driver addon for nodejs.
 
+[![Node.js CI](https://github.com/PupilTong/node-tuntap2/actions/workflows/node.js.yml/badge.svg)](https://github.com/PupilTong/node-tuntap2/actions/workflows/node.js.yml)
+
+[![Node.js Package](https://github.com/PupilTong/node-tuntap2/actions/workflows/npm-publish.yml/badge.svg)](https://github.com/PupilTong/node-tuntap2/actions/workflows/npm-publish.yml)
+
 ## TL; DR
 
 ```javascript

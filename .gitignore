@@ -1,6 +1,5 @@
 /build/
-/node_modules/
-dcdcd*
+*node_modules*
 index.json
 .nyc_output
 /coverage

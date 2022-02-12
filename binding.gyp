@@ -6,10 +6,12 @@
         "src/cpp/tuntap-napi.cpp",
         "src/cpp/tuntap-linux.cpp"
       ],
-      'cflags!': [ '-fno-exceptions', '--std=c++17' ],
-      'cflags_cc!': [ '-fno-exceptions' ],
+      'cflags!': [ '-fno-exceptions', '--std=c++17', '-Wno-stringop-truncation' ],
+      'cflags_cc!': [ '-fno-exceptions', '--std=c++17', '-Wno-stringop-truncation' ],
       "cflags+": [
-        "-fvisibility=hidden"
+        "-fvisibility=hidden",
+        '--std=c++17',
+        '-Wno-stringop-truncation'
       ],
       "include_dirs": [
         "<!(node -p \"require('node-addon-api').include_dir\")"

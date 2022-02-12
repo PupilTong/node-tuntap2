@@ -69,7 +69,7 @@ describe("mac address for tap",function(){
     should.throws(()=>{mac = tap.mac},"should throw if dev doesn't up")
     tap.isUp = true;
     mac = tap.mac
-    should.equal(mac,"00:cd:ef:12:34:56", `mac address ${mac}  doesn't equal to the address which we just set`);
+    should.equal(mac,"00:cd:ef:12:34:56", `mac address ${mac}  doesn't equal to the address which we just set 00:cd:ef:12:34:56`);
     done();
   });
   after(function () {

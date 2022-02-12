@@ -26,7 +26,10 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
-    - run: npm install -g nyc
+    # - run: sudo npm install -g nyc
+    - run: sudo npm install -g mocha
     - run: npm ci
     - run: npm run build --if-present
+    - run: sudo iptables -P FORWARD ACCEPT
+    - run: sudo sysctl net.ipv4.ip_forward=1
     - run: npm test

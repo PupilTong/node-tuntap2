@@ -61,6 +61,12 @@ catch(e) {
 
 The writing and reading of tuntap is based on nodejs `fs` and `readingStream`. This means these methods is running on libuv threads pool. Please set the threads pool size properly for your application.
 
+## Contribute
+
+Please feel free to create issues, Prs and tell me your ideas! 
+
+**I REALLY APPRECIATE IT**
+
 ## TODO
 
 * [ ] make it compatible with `node-tuntap`

@@ -7,7 +7,6 @@
 #include <linux/if_tun.h>
 #include <linux/socket.h>
 #include <netinet/ether.h>
-#include <netinet/if_ether.h>
 #include <netinet/in.h>
 
 #include <fcntl.h>

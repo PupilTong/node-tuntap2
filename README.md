@@ -2,8 +2,8 @@
 
 a opensource, asynchronized, napi-based, business friendly tuntap device driver addon for nodejs.
 
+[![](https://img.shields.io/npm/v/tuntap2.svg?style=flat)](https://www.npmjs.org/package/tuntap2)
 [![Node.js CI](https://github.com/PupilTong/node-tuntap2/actions/workflows/node.js.yml/badge.svg?branch=main)](https://github.com/PupilTong/node-tuntap2/actions/workflows/node.js.yml)
-
 [![Node.js Package](https://github.com/PupilTong/node-tuntap2/actions/workflows/npm-publish.yml/badge.svg)](https://github.com/PupilTong/node-tuntap2/actions/workflows/npm-publish.yml)
 
 ## TL; DR
@@ -28,6 +28,12 @@ catch(e) {
 	console.log('error: ', e);
 	process.exit(0);
 }
+```
+
+## install
+
+```bash
+npm i tuntap2
 ```
 
 ## Properties

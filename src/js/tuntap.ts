@@ -1,75 +1,64 @@
-import tuntapAddon from "./tuntap2Addon";
-import * as fs from "fs";
-import * as os from "os";
-import * as jmespath from "jmespath";
-interface Tuntap {
-    readonly name: string;
-    readonly isTap: boolean;
-    readonly isTun: boolean;
-    mac: string;
-    mtu: number;
-    ipv4: string;
-    ipv6: string;
-    isUp: boolean;
-    onReceive: (packet: Buffer) => void;
-    release: () => Promise<void>;
-    writePacket: (
-        data: Buffer,
-        callback: (
-            err: NodeJS.ErrnoException,
-            written: number,
-            buffer: Buffer,
-        ) => void,
-    ) => void;
-}
-class tuntap implements Tuntap {
+import tuntapAddon from './tuntap2Addon';
+import * as fs from 'fs';
+import * as os from 'os';
+import * as jmespath from 'jmespath';
+import { Readable, Writable } from 'stream';
+// interface TuntapI {
+//     readonly name: string;
+//     readonly isTap: boolean;
+//     readonly isTun: boolean;
+//     readonly readable: Readable;
+//     readonly writable: Writable;
+//     mac: string;
+//     mtu: number;
+//     ipv4: string;
+//     ipv6: string;
+//     isUp: boolean;
+//     release: ()=>void;
+// }
+class Tuntap {
     _deviceMode: string;
     _fd: number;
     _ifName: string;
     _isUp: boolean = false;
-    _readingStream: fs.ReadStream;
-    _onReceive: (packet: Buffer) => void;
+    readonly readable: Readable;
+    readonly writable: Writable;
 
-    constructor(mode: "tun" | "tap") {
+    constructor(mode: 'tun' | 'tap') {
         this._deviceMode = mode;
-        this._fd = fs.openSync(`/dev/net/tun`, "r+");
-        this._ifName = tuntapAddon.tuntapInit(this._fd, mode == "tap");
-        this._readingStream = fs.createReadStream("", {
+        this._fd = fs.openSync(`/dev/net/tun`, 'r+', fs.constants.O_SYNC);
+        this._ifName = tuntapAddon.tuntapInit(this._fd, mode == 'tap');
+        this.readable = fs.createReadStream('', {
             fd: this._fd,
             autoClose: false,
             emitClose: true,
         });
-    }
-    public async writePacket(
-        packet: Buffer,
-        callback: (
-            err: NodeJS.ErrnoException,
-            written: number,
-            buffer: Buffer,
-        ) => void,
-    ) {
-        // fs.writeSync(this._fd, packet);
-        fs.write(this._fd, packet, callback);
-        // callback();
+        this.writable = fs.createWriteStream('',{
+            fd: this._fd,
+            autoClose: false,
+            emitClose: false,
+            fs:{
+                write:fs.write
+            }
+        } as any);
+    };
+    release(error?: Error) {
+        this.readable.destroy(error);
+    };
+    public pipe(destination: NodeJS.WritableStream, options?: { end?: boolean; }): NodeJS.WritableStream {
+        this.readable.pipe(destination,options);
+        return this.writable;
     }
     private makeSureIsUp() {
         if (!this.isUp) {
             throw `you must set isUp = true in order to access this method`;
         }
     }
-    get onReceive(): (packet: Buffer) => void {
-        return this._onReceive;
-    }
-    set onReceive(newVal) {
-        this._onReceive = newVal;
-        this._readingStream.removeAllListeners("data");
-        this._readingStream.on("data", this.onReceive);
-    }
     get name(): string {
         return this._ifName;
     }
     get isTap(): boolean {
-        return this._deviceMode == "tap";
+        return this._deviceMode == 'tap';
     }
     get isTun(): boolean {
         return !this.isTap;
@@ -109,7 +98,7 @@ class tuntap implements Tuntap {
         );
     }
     set ipv4(ip: string) {
-        const cirdArray = ip.split("/");
+        const cirdArray = ip.split('/');
         if (cirdArray.length != 2) {
             throw `incorrect ip address: ${ip}`;
         }
@@ -126,7 +115,7 @@ class tuntap implements Tuntap {
         );
     }
     set ipv6(ip: string) {
-        const cirdArray = ip.split("/");
+        const cirdArray = ip.split('/');
         if (cirdArray.length != 2) {
             throw `incorrect ipv6 address: ${ip}`;
         }
@@ -135,13 +124,10 @@ class tuntap implements Tuntap {
         const ifIndex = tuntapAddon.tuntapGetIfIndex(this._ifName);
         tuntapAddon.tuntapSetIpv6(ifIndex, addr, prefix);
     }
-    public async release() {
-        this._readingStream.destroy();
-    }
 }
-class Tap extends tuntap {
+class Tap extends Tuntap {
     constructor() {
-        super("tap");
+        super('tap');
     }
     set mac(mac: string) {
         tuntapAddon.tuntapSetMac(this._ifName, mac);
@@ -150,9 +136,9 @@ class Tap extends tuntap {
         return super.mac;
     }
 }
-class Tun extends tuntap {
+class Tun extends Tuntap {
     constructor() {
-        super("tun");
+        super('tun');
     }
 }
 export = { Tap, Tun };

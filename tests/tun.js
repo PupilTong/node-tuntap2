@@ -191,16 +191,17 @@ describe("test send and receive packet", function () {
         socket = dgram.createSocket("udp4");
     });
     it("send one packet", function (done) {
-        tun.writePacket(packet, () => {});
+        tun.writable.write(packet, () => {});
         done();
     });
     it("receive packet", function (done) {
-        tun.writePacket(packet, () => {});
-        tun.onReceive = (chunk) => {
+        for(let i=0;i<10;i++)
+        tun.writable.write(packet, () => {});
+        tun.readable.on('data', (chunk) => {
             // console.log(`${tun.name} - Receiver: ${chunk.length} bytes`);
-            tun.onReceive = ()=>{};
+            tun.readable.removeAllListeners();
             done();
-        }
+        });
         socket.send("hello!", 43210, '4.3.2.1', (err) => {});
     })
     ;
@@ -240,7 +241,7 @@ describe("test send by tun and receive by another tun", function () {
             1. iptables -L  or iptables -P FORWARD ACCEPT
             2. sysctl net.ipv4.ip_forward=1
         */
-        tun2.onReceive = (buf)=>{
+        tun2.readable.on('data',(buf)=>{
             const isEqual = buf.reduce((perv, curr, index)=>{
                 if(index>=packet.length)return false;
                 // console.log(`${curr},${packet[index]},index: ${index}`);
@@ -250,8 +251,8 @@ describe("test send by tun and receive by another tun", function () {
                 );
             },1);
             if(isEqual)done();
-        };
-        tun1.writePacket(packet,()=>{});
+        });
+        tun1.writable.write(packet,()=>{});
     });
     after(function () {
         tun1.release();

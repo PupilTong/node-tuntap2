@@ -1,52 +1,47 @@
 "use strict";
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 const tuntap2Addon_1 = require("./tuntap2Addon");
 const fs = require("fs");
 const os = require("os");
 const jmespath = require("jmespath");
-class tuntap {
+class Tuntap {
     constructor(mode) {
         this._isUp = false;
         this._deviceMode = mode;
-        this._fd = fs.openSync(`/dev/net/tun`, "r+");
-        this._ifName = tuntap2Addon_1.default.tuntapInit(this._fd, mode == "tap");
-        this._readingStream = fs.createReadStream("", {
+        this._fd = fs.openSync(`/dev/net/tun`, 'r+', fs.constants.O_SYNC);
+        this._ifName = tuntap2Addon_1.default.tuntapInit(this._fd, mode == 'tap');
+        this.readable = fs.createReadStream('', {
             fd: this._fd,
             autoClose: false,
             emitClose: true,
         });
-    }
-    writePacket(packet, callback) {
-        return __awaiter(this, void 0, void 0, function* () {
-            fs.write(this._fd, packet, callback);
+        this.writable = fs.createWriteStream('', {
+            fd: this._fd,
+            autoClose: false,
+            emitClose: false,
+            fs: {
+                write: fs.write
+            }
         });
+    }
+    ;
+    release(error) {
+        this.readable.destroy(error);
+    }
+    ;
+    pipe(destination, options) {
+        this.readable.pipe(destination, options);
+        return this.writable;
     }
     makeSureIsUp() {
         if (!this.isUp) {
             throw `you must set isUp = true in order to access this method`;
         }
     }
-    get onReceive() {
-        return this._onReceive;
-    }
-    set onReceive(newVal) {
-        this._onReceive = newVal;
-        this._readingStream.removeAllListeners("data");
-        this._readingStream.on("data", this.onReceive);
-    }
     get name() {
         return this._ifName;
     }
     get isTap() {
-        return this._deviceMode == "tap";
+        return this._deviceMode == 'tap';
     }
     get isTun() {
         return !this.isTap;
@@ -81,7 +76,7 @@ class tuntap {
         return jmespath.search(ifInfo, `${this._ifName}[?family=='IPv4'].cidr|[0]`);
     }
     set ipv4(ip) {
-        const cirdArray = ip.split("/");
+        const cirdArray = ip.split('/');
         if (cirdArray.length != 2) {
             throw `incorrect ip address: ${ip}`;
         }
@@ -95,7 +90,7 @@ class tuntap {
         return jmespath.search(ifInfo, `${this._ifName}[?family=='IPv6'].cidr|[0]`);
     }
     set ipv6(ip) {
-        const cirdArray = ip.split("/");
+        const cirdArray = ip.split('/');
         if (cirdArray.length != 2) {
             throw `incorrect ipv6 address: ${ip}`;
         }
@@ -104,15 +99,10 @@ class tuntap {
         const ifIndex = tuntap2Addon_1.default.tuntapGetIfIndex(this._ifName);
         tuntap2Addon_1.default.tuntapSetIpv6(ifIndex, addr, prefix);
     }
-    release() {
-        return __awaiter(this, void 0, void 0, function* () {
-            this._readingStream.destroy();
-        });
-    }
 }
-class Tap extends tuntap {
+class Tap extends Tuntap {
     constructor() {
-        super("tap");
+        super('tap');
     }
     set mac(mac) {
         tuntap2Addon_1.default.tuntapSetMac(this._ifName, mac);
@@ -121,9 +111,9 @@ class Tap extends tuntap {
         return super.mac;
     }
 }
-class Tun extends tuntap {
+class Tun extends Tuntap {
     constructor() {
-        super("tun");
+        super('tun');
     }
 }
 module.exports = { Tap, Tun };

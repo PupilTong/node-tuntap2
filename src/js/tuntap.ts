@@ -40,7 +40,7 @@ class Tuntap {
             fs:{
                 write:fs.write,
                 open:()=>{},
-                close:()=>{},
+                close:()=>{}
             }
         } as any);
     };

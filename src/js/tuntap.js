@@ -19,7 +19,8 @@ class Tuntap {
             autoClose: false,
             emitClose: false,
             fs: {
-                write: fs.write
+                write: fs.write,
+                open: () => { }
             }
         });
     }

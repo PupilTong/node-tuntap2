@@ -3,7 +3,6 @@ const should = require("should");
 const os = require("os");
 const dgram = require("dgram");
 const jmespath = require('jmespath');
-const { type } = require("os");
 describe("Test tun creating.", function () {
     it("should successfuly creating object", function (done) {
         const tun = new Tun();
@@ -173,7 +172,6 @@ describe("test send and receive packet", function () {
     let tun;
     let packet;
     let socket;
-    // this.timeout(200000);
     before(function () {
         tun = new Tun();
         tun.isUp = true;
@@ -191,15 +189,14 @@ describe("test send and receive packet", function () {
         socket = dgram.createSocket("udp4");
     });
     it("send one packet", function (done) {
-        tun.writable.write(packet, () => {});
+        tun.write(packet, () => {});
         done();
     });
     it("receive packet", function (done) {
-        for(let i=0;i<10;i++)
-        tun.writable.write(packet, () => {});
-        tun.readable.on('data', (chunk) => {
+        tun.write(packet, () => {});
+        tun.on('data', (chunk) => {
             // console.log(`${tun.name} - Receiver: ${chunk.length} bytes`);
-            tun.readable.removeAllListeners();
+            tun.removeAllListeners();
             done();
         });
         socket.send("hello!", 43210, '4.3.2.1', (err) => {});
@@ -241,7 +238,7 @@ describe("test send by tun and receive by another tun", function () {
             1. iptables -L  or iptables -P FORWARD ACCEPT
             2. sysctl net.ipv4.ip_forward=1
         */
-        tun2.readable.on('data',(buf)=>{
+        tun2.on('data',(buf)=>{
             const isEqual = buf.reduce((perv, curr, index)=>{
                 if(index>=packet.length)return false;
                 // console.log(`${curr},${packet[index]},index: ${index}`);

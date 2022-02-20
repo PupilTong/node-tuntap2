@@ -5,8 +5,8 @@
   "main": "index.js",
   "types": "index.ts",
   "scripts": {
-    "install": "prebuild-install --runtime napi --tag-prefix '' || node-gyp rebuild || tsc",
-    "build": "node-gyp rebuild && tsc",
+    "install": "prebuild-install --runtime napi --tag-prefix '' || node-gyp rebuild",
+    "build": "node-gyp rebuild && tsc --build",
     "build:dev": "node-gyp rebuild --debug",
     "test": "sudo mocha tests/*",
     "coverage": "sudo nyc mocha tests/*"
@@ -16,6 +16,9 @@
   "repository": {
     "type": "git",
     "url": "git+https://github.com/PupilTong/node-tuntap2.git"
+  },
+  "engines": {
+    "node": ">12.0.0"
   },
   "keywords": [
     "tunnel",

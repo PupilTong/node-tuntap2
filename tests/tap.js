@@ -1,4 +1,4 @@
-const {Tap,} = require('..');
+const {Tap} = require('..');
 const should = require("should");
 const os = require('os');
 describe("Test tap creating.", function () {

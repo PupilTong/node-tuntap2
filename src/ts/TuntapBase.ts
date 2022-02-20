@@ -3,37 +3,29 @@ import * as fs from 'fs';
 import * as os from 'os';
 import * as jmespath from 'jmespath';
 import { Readable, Writable } from 'stream';
-// interface TuntapI {
-//     readonly name: string;
-//     readonly isTap: boolean;
-//     readonly isTun: boolean;
-//     readonly readable: Readable;
-//     readonly writable: Writable;
-//     mac: string;
-//     mtu: number;
-//     ipv4: string;
-//     ipv6: string;
-//     isUp: boolean;
-//     release: ()=>void;
-// }
-class Tuntap {
-    _deviceMode: string;
+
+/**
+ *
+ * @class TuntapBase
+ */
+export class TuntapBase {
+    _deviceMode: 'tun' | 'tap';
     _fd: number;
     _ifName: string;
     _isUp: boolean = false;
-    readonly readable: Readable;
-    readonly writable: Writable;
+    readonly readStream: Readable;
+    readonly writeStream: Writable;
 
     constructor(mode: 'tun' | 'tap') {
         this._deviceMode = mode;
         this._fd = fs.openSync(`/dev/net/tun`, 'r+', fs.constants.O_SYNC);
         this._ifName = tuntapAddon.tuntapInit(this._fd, mode == 'tap');
-        this.readable = fs.createReadStream('', {
+        this.readStream = fs.createReadStream('', {
             fd: this._fd,
             autoClose: false,
             emitClose: true,
         });
-        this.writable = fs.createWriteStream('',{
+        this.writeStream = fs.createWriteStream('',{
             fd: this._fd,
             autoClose: false,
             emitClose: false,
@@ -43,14 +35,10 @@ class Tuntap {
                 close:()=>{}
             }
         } as any);
-    };
-    release(error?: Error) {
-        this.readable.destroy(error);
-    };
-    public pipe(destination: NodeJS.WritableStream, options?: { end?: boolean; }): NodeJS.WritableStream {
-        this.readable.pipe(destination,options);
-        return this.writable;
     }
+    release(error?: Error) {
+        this.readStream.destroy(error);
+    };
     private makeSureIsUp() {
         if (!this.isUp) {
             throw `you must set isUp = true in order to access this method`;
@@ -84,6 +72,9 @@ class Tuntap {
             `${this._ifName}[*].[mac]|[0]`,
         );
         return mac;
+    }    
+    set mac(mac: string) {
+        tuntapAddon.tuntapSetMac(this._ifName, mac);
     }
     get mtu(): number {
         return tuntapAddon.tuntapGetMtu(this._ifName);
@@ -127,20 +118,3 @@ class Tuntap {
         tuntapAddon.tuntapSetIpv6(ifIndex, addr, prefix);
     }
 }
-class Tap extends Tuntap {
-    constructor() {
-        super('tap');
-    }
-    set mac(mac: string) {
-        tuntapAddon.tuntapSetMac(this._ifName, mac);
-    }
-    get mac(): string {
-        return super.mac;
-    }
-}
-class Tun extends Tuntap {
-    constructor() {
-        super('tun');
-    }
-}
-export = { Tap, Tun };

@@ -1,35 +1,40 @@
-import {TuntapBase} from './TuntapBase'
-import { TuntapI } from './tuntapI';
+import { TuntapBase } from './TuntapBase'
+import { TuntapI } from './TuntapI';
 
-export class Tuntap extends TuntapBase implements TuntapI{
-    get writableHighWaterMark(): number{
+export class Tuntap extends TuntapBase implements TuntapI {
+    get writableHighWaterMark(): number {
         return this.writeStream.writableHighWaterMark;
     };
-    get writableLength(): number{
+    get writableLength(): number {
         return this.writeStream.writableLength;
     };
-    get writableObjectMode(): boolean{
+    get writableObjectMode(): boolean {
         return this.writeStream.writableObjectMode
     };
-    get writableCorked(): number{
+    get writableCorked(): number {
         return this.writeStream.writableCorked
     };
-    get allowHalfOpen(): boolean{
+    get allowHalfOpen(): boolean {
         return false;
     };
-    _write = this.writeStream._write;
+    _write(chunk: any, encoding: BufferEncoding, callback: (error?: Error) => void): void {
+        return this.writeStream._write(chunk, encoding, callback);
+    }
     _writev?(chunks: { chunk: any; encoding: BufferEncoding; }[], callback: (error?: Error) => void): void {
         throw new Error('Method not implemented.');
     }
     _destroy(error: Error, callback: (error: Error) => void): void {
         this.writeStream._destroy(error, callback);
         this.readStream._destroy(error, callback);
-        this.release();
     }
     _final(callback: (error?: Error) => void): void {
         this.writeStream._final(callback);
     }
-    write = this.writeStream.write;
+    write(chunk: any, encoding?: BufferEncoding, cb?: (error: Error) => void): boolean;
+    write(chunk: any, cb?: (error: Error) => void): boolean;
+    write(chunk: any, encoding?: any, cb?: any): boolean {
+        return this.writeStream.write(chunk, cb);
+    }
     setDefaultEncoding(encoding: BufferEncoding): this {
         throw new Error('Method is not allowed.');
     }
@@ -39,44 +44,52 @@ export class Tuntap extends TuntapBase implements TuntapI{
     end(chunk?: any, encoding?: any, cb?: any): this {
         throw new Error('Method not implemented.');
     }
-    cork = this.writeStream.cork;
-    uncork = this.writeStream.uncork;
-    get readableAborted(): boolean{
+    cork(): void {
+        this.writeStream.cork();
+    }
+    uncork(): void {
+        this.writeStream.uncork();
+    }
+    get readableAborted(): boolean {
         return this.readStream.readableAborted;
     };
-    get readable(): boolean{
+    get readable(): boolean {
         return this.readStream.readable;
     }
-    get readableDidRead(): boolean{
+    get readableDidRead(): boolean {
         return this.readStream.readableDidRead;
     }
-    get readableEncoding(): BufferEncoding{
+    get readableEncoding(): BufferEncoding {
         return this.readStream.readableEncoding;
     }
-    get readableEnded(): boolean{
+    get readableEnded(): boolean {
         return this.readStream.readableEnded;
     }
-    get readableFlowing(): boolean{
+    get readableFlowing(): boolean {
         return this.readStream.readableFlowing;
     }
-    get readableHighWaterMark(): number{
+    get readableHighWaterMark(): number {
         return this.readStream.readableHighWaterMark;
     }
-    get readableLength(): number{
+    get readableLength(): number {
         return this.readStream.readableLength;
     }
-    get readableObjectMode(): boolean{
+    get readableObjectMode(): boolean {
         return this.readStream.readableObjectMode;
     }
-    get destroyed(): boolean{
+    get destroyed(): boolean {
         return this.readStream.destroyed;
     }
     get_construct?(callback: (error?: Error) => void): void {
         return this.readStream._construct(callback);
     }
-    _read = this.readStream._read;
+    _read(size: number): void {
+        return this.readStream._read(size);
+    }
 
-    read = this.readStream.read;
+    read(...rests: any[]) {
+        return this.readStream.read(...rests);
+    }
     setEncoding(encoding: BufferEncoding): this {
         throw new Error('Method is not allowed.');
     }
@@ -88,21 +101,25 @@ export class Tuntap extends TuntapBase implements TuntapI{
         this.readStream.resume();
         return this;
     }
-    isPaused = this.readStream.isPaused;
+    isPaused(): boolean {
+        return this.readStream.isPaused();
+    }
     unpipe(destination?: NodeJS.WritableStream): this {
         this.readStream.unpipe(destination);
         return this;
     }
-    unshift = this.readStream.unshift;
+    unshift(chunk: any, encoding?: BufferEncoding): void {
+        this.readStream.unshift(chunk, encoding);
+    }
     wrap(stream: NodeJS.ReadableStream): this {
         this.readStream.wrap(stream);
         return this;
     }
-    push = this.readStream.push;
+    push(chunk: any, encoding?: BufferEncoding): boolean {
+        return this.readStream.push(chunk, encoding);
+    }
     destroy(error?: Error): this {
-        this.writeStream.destroy(error);
-        this.readStream.destroy(error);
-        this.release();
+        this.release(error);
         return this;
     }
     addListener(event: 'close', listener: () => void): this;
@@ -114,10 +131,20 @@ export class Tuntap extends TuntapBase implements TuntapI{
     addListener(event: 'resume', listener: () => void): this;
     addListener(event: string | symbol, listener: (...args: any[]) => void): this;
     addListener(event: any, listener: any): this {
-        this.readStream.addListener(event,listener);
+        this.readStream.addListener(event, listener);
         return this;
     }
-    emit = this.readStream.emit;
+    emit(event: 'close'): boolean;
+    emit(event: 'data', chunk: any): boolean;
+    emit(event: 'end'): boolean;
+    emit(event: 'error', err: Error): boolean;
+    emit(event: 'pause'): boolean;
+    emit(event: 'readable'): boolean;
+    emit(event: 'resume'): boolean;
+    emit(event: string | symbol, ...args: any[]): boolean;
+    emit(event: any, err?: any, ...rest: any[]): boolean {
+        return this.readStream.emit(event, err, ...rest);
+    }
     on(event: 'close', listener: () => void): this;
     on(event: 'data', listener: (chunk: any) => void): this;
     on(event: 'end', listener: () => void): this;
@@ -127,7 +154,7 @@ export class Tuntap extends TuntapBase implements TuntapI{
     on(event: 'resume', listener: () => void): this;
     on(event: string | symbol, listener: (...args: any[]) => void): this;
     on(event: any, listener: any): this {
-        this.readStream.on(event,listener);
+        this.readStream.on(event, listener);
         return this;
     }
     once(event: 'close', listener: () => void): this;
@@ -139,7 +166,7 @@ export class Tuntap extends TuntapBase implements TuntapI{
     once(event: 'resume', listener: () => void): this;
     once(event: string | symbol, listener: (...args: any[]) => void): this;
     once(event: any, listener: any): this {
-        this.readStream.once(event,listener);
+        this.readStream.once(event, listener);
         return this;
     }
     prependListener(event: 'close', listener: () => void): this;
@@ -151,7 +178,7 @@ export class Tuntap extends TuntapBase implements TuntapI{
     prependListener(event: 'resume', listener: () => void): this;
     prependListener(event: string | symbol, listener: (...args: any[]) => void): this;
     prependListener(event: any, listener: any): this {
-        this.readStream.prependListener(event,listener);
+        this.readStream.prependListener(event, listener);
         return this;
     }
     prependOnceListener(event: 'close', listener: () => void): this;
@@ -163,7 +190,7 @@ export class Tuntap extends TuntapBase implements TuntapI{
     prependOnceListener(event: 'resume', listener: () => void): this;
     prependOnceListener(event: string | symbol, listener: (...args: any[]) => void): this;
     prependOnceListener(event: any, listener: any): this {
-        this.readStream.prependOnceListener(event,listener);
+        this.readStream.prependOnceListener(event, listener);
         return this;
     }
     removeListener(event: 'close', listener: () => void): this;
@@ -175,18 +202,18 @@ export class Tuntap extends TuntapBase implements TuntapI{
     removeListener(event: 'resume', listener: () => void): this;
     removeListener(event: string | symbol, listener: (...args: any[]) => void): this;
     removeListener(event: any, listener: any): this {
-        this.readStream.removeListener(event,listener);
+        this.readStream.removeListener(event, listener);
         return this;
     }
     [Symbol.asyncIterator](): AsyncIterableIterator<any> {
         throw new Error('Method not implemented.');
     }
     pipe<T extends NodeJS.WritableStream>(destination: T, options?: { end?: boolean; }): T {
-        throw new Error('Method not implemented.');
+        return this.readStream.pipe(destination, options);
     }
     off(eventName: string | symbol, listener: (...args: any[]) => void): this {
-        this.writeStream.off(eventName,listener);
-        this.readStream.off(eventName,listener);
+        this.writeStream.off(eventName, listener);
+        this.readStream.off(eventName, listener);
         return this;
     }
     removeAllListeners(event?: string | symbol): this {
@@ -214,13 +241,13 @@ export class Tuntap extends TuntapBase implements TuntapI{
     eventNames(): (string | symbol)[] {
         return [...this.writeStream.eventNames(), ...this.readStream.eventNames()]
     }
-    get writable(): boolean{
+    get writable(): boolean {
         return this.writeStream.writable;
     }
-    get writableEnded(): boolean{
+    get writableEnded(): boolean {
         return this.writeStream.writableEnded;
     }
-    get writableFinished(): boolean{
+    get writableFinished(): boolean {
         return this.writeStream.writableFinished;
     }
 }

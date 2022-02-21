@@ -10,5 +10,5 @@ export interface tuntap2AddonTypes {
     tuntapGetIfIndex: (name: string) => number;
     tuntapSetIpv6: (ifIndex: number, ipStr: string, prefix: number) => number;
 }
-const tuntap2Addon: tuntap2AddonTypes = require("../../build/Release/tuntap2Addon");
+const tuntap2Addon: tuntap2AddonTypes = require("../../../build/Release/tuntap2Addon");
 export default tuntap2Addon;

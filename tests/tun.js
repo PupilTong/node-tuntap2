@@ -3,6 +3,7 @@ const should = require("should");
 const os = require("os");
 const dgram = require("dgram");
 const jmespath = require('jmespath');
+const { exit } = require("process");
 describe("Test tun creating.", function () {
     it("should successfuly creating object", function (done) {
         const tun = new Tun();
@@ -194,9 +195,8 @@ describe("test send and receive packet", function () {
     });
     it("receive packet", function (done) {
         tun.write(packet, () => {});
-        tun.on('data', (chunk) => {
+        tun.once('data', (chunk) => {
             // console.log(`${tun.name} - Receiver: ${chunk.length} bytes`);
-            tun.removeAllListeners();
             done();
         });
         socket.send("hello!", 43210, '4.3.2.1', (err) => {});
@@ -249,7 +249,7 @@ describe("test send by tun and receive by another tun", function () {
             },1);
             if(isEqual)done();
         });
-        tun1.writable.write(packet,()=>{});
+        tun1.write(packet,()=>{});
     });
     after(function () {
         tun1.release();

@@ -15,6 +15,7 @@ describe("Test Compatibility with node-tuntap.", function () {
         });
         
         tt.pipe(tt);
+        tt.release();
         done();
     });
 });

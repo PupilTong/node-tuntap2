@@ -2,7 +2,7 @@
   "name": "tuntap2",
   "version": "0.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "./dist/index.js",
   "types": "index.ts",
   "scripts": {
     "install": "prebuild-install --runtime napi --tag-prefix '' || node-gyp rebuild",
@@ -28,11 +28,10 @@
     "vpn"
   ],
   "files": [
-    "src/cpp/*",
-    "src/js/*",
-    "index.js",
+    "./dist/*",
     "index.ts",
-    "binding.gyp"
+    "binding.gyp",
+    "tsconfig.json"
   ],
   "gypfile": true,
   "dependencies": {

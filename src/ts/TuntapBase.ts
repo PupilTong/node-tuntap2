@@ -1,4 +1,4 @@
-import tuntapAddon from './tuntap2Addon';
+import tuntapAddon from './Tuntap2Addon';
 import * as fs from 'fs';
 import * as os from 'os';
 import * as jmespath from 'jmespath';
@@ -13,31 +13,35 @@ export class TuntapBase {
     _fd: number;
     _ifName: string;
     _isUp: boolean = false;
-    readonly readStream: Readable;
-    readonly writeStream: Writable;
+    readonly readStream: fs.ReadStream;
+    readonly writeStream: fs.WriteStream;
 
     constructor(mode: 'tun' | 'tap') {
         this._deviceMode = mode;
-        this._fd = fs.openSync(`/dev/net/tun`, 'r+', fs.constants.O_SYNC);
+        const fd = fs.openSync(`/dev/net/tun`, 'r+');
+        this._fd = fd;
         this._ifName = tuntapAddon.tuntapInit(this._fd, mode == 'tap');
         this.readStream = fs.createReadStream('', {
             fd: this._fd,
-            autoClose: false,
-            emitClose: true,
-        });
+            autoClose: true,
+            emitClose: true
+        } as any);
         this.writeStream = fs.createWriteStream('',{
             fd: this._fd,
-            autoClose: false,
-            emitClose: false,
+            autoClose: true,
+            emitClose: true,
             fs:{
                 write:fs.write,
-                open:()=>{},
-                close:()=>{}
+                open:()=> fd,
+                close:(fd: any,callback: () => void)=>{callback()}
             }
         } as any);
+        this.writeStream.once('close',()=>{ //close two stream one by one
+            this.readStream.close();
+        })
     }
     release(error?: Error) {
-        this.readStream.destroy(error);
+        this.writeStream.close();
     };
     private makeSureIsUp() {
         if (!this.isUp) {

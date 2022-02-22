@@ -2,46 +2,189 @@ import { TuntapBase } from './TuntapBase'
 import { TuntapI } from './TuntapI';
 
 export class Tuntap extends TuntapBase implements TuntapI {
+
+    /**
+     * Return the value of `highWaterMark` 
+     * 
+     * This method just returns the same name property of `fs.WriteStream`
+     * @see fs.WriteStream for implementation details
+     * @since v0.1.0
+     */
     get writableHighWaterMark(): number {
         return this.writeStream.writableHighWaterMark;
     };
+    /**
+     * This property contains the number of bytes  in the queue
+     * ready to be written. The value provides introspection data regarding
+     * the status of the `highWaterMark`.
+     * 
+     * This method just returns the same name property of `fs.WriteStream`
+     * @see fs.WriteStream for implementation details
+     * @since v0.1.0
+     */
     get writableLength(): number {
         return this.writeStream.writableLength;
     };
+    /**
+     * Getter for the property `objectMode`
+     * 
+     * This method just returns the same name property of `fs.WriteStream`
+     * @see fs.WriteStream for implementation details
+     * @since v0.1.0
+     */
     get writableObjectMode(): boolean {
         return this.writeStream.writableObjectMode
     };
+    /**
+     *
+     * Number of times `writable.uncork()` needs to be
+     * called in order to fully uncork the stream.
+     * 
+     * This method just returns the same name property of `fs.WriteStream`
+     * @see fs.WriteStream for implementation details
+     *
+     * @readonly
+     * @type {number}
+     * @memberof Tuntap
+     * @since v0.1.0
+     */
     get writableCorked(): number {
         return this.writeStream.writableCorked
     };
+    /**
+     *
+     * always `false`
+     * @readonly
+     * @type {boolean}
+     * @memberof Tuntap
+     */
     get allowHalfOpen(): boolean {
         return false;
     };
+    /**
+     *
+     * This method is a function wrapper of the same name method in `fs.WriteStream`
+     * It will pass all arguments to `fs.WriteStream._write`
+     * @see fs.WriteStream for details
+     *
+     * @param {*} chunk
+     * @param {BufferEncoding} encoding
+     * @param {(error?: Error) => void} callback
+     * @return {*}  {void}
+     * @memberof Tuntap
+     */
     _write(chunk: any, encoding: BufferEncoding, callback: (error?: Error) => void): void {
         return this.writeStream._write(chunk, encoding, callback);
     }
+    /**
+     * This methods is not allowed for tuntap.
+     * @throws `'Method not implemented.'`
+     *
+     * @param {{ chunk: any; encoding: BufferEncoding; }[]} chunks
+     * @param {(error?: Error) => void} callback
+     * @memberof Tuntap
+     */
     _writev?(chunks: { chunk: any; encoding: BufferEncoding; }[], callback: (error?: Error) => void): void {
         throw new Error('Method not implemented.');
     }
+    /**
+     *
+     * Recommend: call `release()` and use once('close',callback);
+     * @param {Error} error this argument will be ignored
+     * @param {(error: Error) => void} callback will be called after tuntap devices successfully closed.
+     * @memberof Tuntap
+     */
     _destroy(error: Error, callback: (error: Error) => void): void {
-        this.writeStream._destroy(error, callback);
-        this.readStream._destroy(error, callback);
+        this.readStream.once('close', callback);
+        this.release();
     }
+    /**
+     *
+     * This method is a function wrapper of the same name method in `fs.WriteStream`
+     * It will pass all arguments to `fs.WriteStream._final`
+     * @see fs.WriteStream for details
+     * 
+     * @param {(error?: Error) => void} callback
+     * @memberof Tuntap
+     */
     _final(callback: (error?: Error) => void): void {
         this.writeStream._final(callback);
     }
+    /**
+     * @inheritdoc
+     * This method is a function wrapper of the same name method in `fs.WriteStream`
+     * It will pass all arguments to `fs.WriteStream.write`
+     * the `encoding` will be ignored
+     * @see fs.WriteStream for details
+     *
+     * @param {*} chunk
+     * @param {BufferEncoding} [encoding] will be ignored
+     * @param {(error: Error) => void} [cb]
+     * @return {*}  {boolean}
+     * @memberof Tuntap
+     * @since 0.1.0
+     */
     write(chunk: any, encoding?: BufferEncoding, cb?: (error: Error) => void): boolean;
     write(chunk: any, cb?: (error: Error) => void): boolean;
+    /**
+     *
+     * @inheritdoc
+     * This method is a function wrapper of the same name method in `fs.WriteStream`
+     * It will pass all arguments to `fs.WriteStream.write`
+     * the `encoding` will be ignored
+     * @see fs.WriteStream for details
+     * @param {*} chunk
+     * @param {*} [encoding] will be ignored
+     * @param {*} [cb]
+     * @return {*}  {boolean}
+     * @memberof Tuntap
+     * @since 0.1.0
+     */
     write(chunk: any, encoding?: any, cb?: any): boolean {
         return this.writeStream.write(chunk, cb);
     }
+    /**
+     * @throws `Method is not allowed.`
+     * This method is not implemented and not allowed.
+     *
+     * @param {BufferEncoding} encoding
+     * @return {*}  {this}
+     * @memberof Tuntap
+     * @since 0.1.0
+     */
     setDefaultEncoding(encoding: BufferEncoding): this {
         throw new Error('Method is not allowed.');
     }
-    // end(cb?: () => void): this;
-    // end(chunk: any, cb?: () => void): this;
-    // end(chunk: any, encoding?: BufferEncoding, cb?: () => void): this;
+    end(cb?: () => void): this;
+    end(chunk: any, cb?: () => void): this;
+    /**
+     * The encoding parameter will be ignored
+     * 
+     * @inheritdoc
+     * 
+     *
+     * @param {*} chunk
+     * @param {BufferEncoding} [encoding] will be ignored
+     * @param {() => void} [cb]
+     * @return {*}  {this}
+     * @memberof Tuntap
+     * @since 0.1.0
+     */
+    end(chunk: any, encoding?: BufferEncoding, cb?: () => void): this;
+    /**
+     *
+     * The encoding parameter will be ignored
+     * 
+     * @inheritdoc
+     *
+     * @param {*} [chunk]
+     * @param {*} [encoding] will be ignored
+     * @param {*} [cb]
+     * @return {*}  {this}
+     * @memberof Tuntap
+     */
     end(chunk?: any, encoding?: any, cb?: any): this {
+        this.writeStream.end(chunk, cb);
         throw new Error('Method not implemented.');
     }
     cork(): void {
@@ -90,6 +233,14 @@ export class Tuntap extends TuntapBase implements TuntapI {
     read(...rests: any[]) {
         return this.readStream.read(...rests);
     }
+    /**
+     * this method is not allowed and not implemented
+     * @throws 'Method is not allowed.'
+     *
+     * @param {BufferEncoding} encoding
+     * @return {*}  {this}
+     * @memberof Tuntap
+     */
     setEncoding(encoding: BufferEncoding): this {
         throw new Error('Method is not allowed.');
     }
@@ -108,18 +259,44 @@ export class Tuntap extends TuntapBase implements TuntapI {
         this.readStream.unpipe(destination);
         return this;
     }
+    /**
+     *
+     * The encoding parameter will be ignored
+     * 
+     * @inheritdoc
+     *
+     * @param {*} chunk
+     * @param {BufferEncoding} [encoding] will be ignored
+     * @memberof Tuntap
+     */
     unshift(chunk: any, encoding?: BufferEncoding): void {
-        this.readStream.unshift(chunk, encoding);
+        this.readStream.unshift(chunk);
     }
     wrap(stream: NodeJS.ReadableStream): this {
         this.readStream.wrap(stream);
         return this;
     }
+    /**
+     * The encoding parameter will be ignored
+     * @inheritdoc
+     *
+     * @param {*} chunk
+     * @param {BufferEncoding} [encoding]
+     * @return {*}  {boolean}
+     * @memberof Tuntap
+     */
     push(chunk: any, encoding?: BufferEncoding): boolean {
-        return this.readStream.push(chunk, encoding);
+        return this.readStream.push(chunk);
     }
+    /**
+     *
+     * @inheritdoc
+     * @param {Error} [error] will be ignored
+     * @return {*}  {this}
+     * @memberof Tuntap
+     */
     destroy(error?: Error): this {
-        this.release(error);
+        this.release();
         return this;
     }
     addListener(event: 'close', listener: () => void): this;

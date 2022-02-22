@@ -2,7 +2,6 @@ import tuntapAddon from './Tuntap2Addon';
 import * as fs from 'fs';
 import * as os from 'os';
 import * as jmespath from 'jmespath';
-import { Readable, Writable } from 'stream';
 
 /**
  *
@@ -13,9 +12,15 @@ export class TuntapBase {
     _fd: number;
     _ifName: string;
     _isUp: boolean = false;
-    readonly readStream: fs.ReadStream;
-    readonly writeStream: fs.WriteStream;
+    protected readonly readStream: fs.ReadStream;
+    protected readonly writeStream: fs.WriteStream;
 
+    /**
+     * Creates an instance of TuntapBase.
+     * @param {('tun' | 'tap')} mode
+     * @memberof TuntapBase
+     * @since 0.0.1
+     */
     constructor(mode: 'tun' | 'tap') {
         this._deviceMode = mode;
         const fd = fs.openSync(`/dev/net/tun`, 'r+');
@@ -26,23 +31,34 @@ export class TuntapBase {
             autoClose: true,
             emitClose: true
         } as any);
-        this.writeStream = fs.createWriteStream('',{
+        this.writeStream = fs.createWriteStream('', {
             fd: this._fd,
             autoClose: true,
             emitClose: true,
-            fs:{
-                write:fs.write,
-                open:()=> fd,
-                close:(fd: any,callback: () => void)=>{callback()}
+            fs: {
+                write: fs.write,
+                open: () => { return fd },
+                close: (fd: any, callback: () => void) => { callback() }
             }
         } as any);
-        this.writeStream.once('close',()=>{ //close two stream one by one
+        this.writeStream.once('close', () => { //close two stream one by one
             this.readStream.close();
         })
     }
-    release(error?: Error) {
-        this.writeStream.close();
+    /**
+     * release writeStreams, readStreams and the file descriptor.
+     * @memberof TuntapBase
+     */
+    release(callback?: (err?: NodeJS.ErrnoException) => void) {
+        this.writeStream.close(callback);
     };
+    /**
+     * many get methods, like ipv4, ipv6 ... 
+     * implemented via `os.networkInterfaces()`
+     * The device needs to set 'up' to be visible in the `os.networkInterfaces()`
+     * @private
+     * @memberof TuntapBase
+     */
     private makeSureIsUp() {
         if (!this.isUp) {
             throw `you must set isUp = true in order to access this method`;
@@ -76,7 +92,7 @@ export class TuntapBase {
             `${this._ifName}[*].[mac]|[0]`,
         );
         return mac;
-    }    
+    }
     set mac(mac: string) {
         tuntapAddon.tuntapSetMac(this._ifName, mac);
     }

@@ -6,7 +6,7 @@
   "types": "index.ts",
   "scripts": {
     "install": "prebuild-install --runtime napi --tag-prefix '' || node-gyp rebuild",
-    "build": "node-gyp rebuild && tsc --build",
+    "build": "node-gyp rebuild && npx tsc --build",
     "build:dev": "node-gyp rebuild --debug",
     "test": "sudo mocha tests/*",
     "coverage": "sudo nyc mocha tests/*"

@@ -62,11 +62,13 @@ export class Tuntap extends TuntapBase implements TuntapI {
         return false;
     };
     /**
-     *
+     * 
+     * 
      * This method is a function wrapper of the same name method in `fs.WriteStream`
      * It will pass all arguments to `fs.WriteStream._write`
      * @see fs.WriteStream for details
-     *
+     * 
+     * @inheritdoc
      * @param {*} chunk
      * @param {BufferEncoding} encoding
      * @param {(error?: Error) => void} callback
@@ -80,6 +82,7 @@ export class Tuntap extends TuntapBase implements TuntapI {
      * This methods is not allowed for tuntap.
      * @throws `'Method not implemented.'`
      *
+     * @inheritdoc
      * @param {{ chunk: any; encoding: BufferEncoding; }[]} chunks
      * @param {(error?: Error) => void} callback
      * @memberof Tuntap
@@ -171,21 +174,9 @@ export class Tuntap extends TuntapBase implements TuntapI {
      * @since 0.1.0
      */
     end(chunk: any, encoding?: BufferEncoding, cb?: () => void): this;
-    /**
-     *
-     * The encoding parameter will be ignored
-     * 
-     * @inheritdoc
-     *
-     * @param {*} [chunk]
-     * @param {*} [encoding] will be ignored
-     * @param {*} [cb]
-     * @return {*}  {this}
-     * @memberof Tuntap
-     */
     end(chunk?: any, encoding?: any, cb?: any): this {
         this.writeStream.end(chunk, cb);
-        throw new Error('Method not implemented.');
+        return this;
     }
     cork(): void {
         this.writeStream.cork();
@@ -222,9 +213,6 @@ export class Tuntap extends TuntapBase implements TuntapI {
     }
     get destroyed(): boolean {
         return this.readStream.destroyed;
-    }
-    get_construct?(callback: (error?: Error) => void): void {
-        return this.readStream._construct(callback);
     }
     _read(size: number): void {
         return this.readStream._read(size);
@@ -394,29 +382,27 @@ export class Tuntap extends TuntapBase implements TuntapI {
         return this;
     }
     removeAllListeners(event?: string | symbol): this {
-        this.writeStream.removeAllListeners(event);
         this.readStream.removeAllListeners(event);
         return this;
     }
     setMaxListeners(n: number): this {
-        this.writeStream.setMaxListeners(n);
         this.readStream.setMaxListeners(n);
         return this;
     }
     getMaxListeners(): number {
-        return this.writeStream.getMaxListeners() + this.readStream.getMaxListeners();
+        return this.readStream.getMaxListeners();
     }
     listeners(eventName: string | symbol): Function[] {
-        return [...this.writeStream.listeners(eventName), ...this.readStream.listeners(eventName)];
+        return [...this.readStream.listeners(eventName)];
     }
     rawListeners(eventName: string | symbol): Function[] {
-        return [...this.writeStream.rawListeners(eventName), ...this.readStream.rawListeners(eventName)];
+        return [...this.readStream.rawListeners(eventName)];
     }
     listenerCount(eventName: string | symbol): number {
-        return this.writeStream.listenerCount(eventName) + this.readStream.listenerCount(eventName);
+        return this.readStream.listenerCount(eventName);
     }
     eventNames(): (string | symbol)[] {
-        return [...this.writeStream.eventNames(), ...this.readStream.eventNames()]
+        return this.readStream.eventNames();
     }
     get writable(): boolean {
         return this.writeStream.writable;

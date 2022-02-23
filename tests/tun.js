@@ -2,8 +2,6 @@ const { Tap, Tun } = require("..");
 const should = require("should");
 const os = require("os");
 const dgram = require("dgram");
-const jmespath = require('jmespath');
-const { exit } = require("process");
 describe("Test tun creating.", function () {
     it("should successfuly creating object", function (done) {
         const tun = new Tun();
@@ -110,6 +108,25 @@ describe("set ipv4 addresses", function () {
         should.throws(() => {
             tun.ipv4 = "1.2.3.4/8/";
         }, "should throw for incorrect ip");
+        done();
+    });
+    after(function () {
+        tun.release();
+    });
+});
+
+describe("mac address", function () {
+    let tun;
+    before(function () {
+        tun = new Tun();
+        tun.isUp = true;
+    });
+    it("set mac", function (done) {
+        should.throws(()=>{tun.mac='00:cd:ef:12:34:56'});
+        done();
+    });
+    it("get mac", function (done) {
+        const mac = tun.mac;
         done();
     });
     after(function () {

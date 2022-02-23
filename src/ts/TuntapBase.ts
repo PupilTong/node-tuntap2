@@ -41,16 +41,30 @@ export class TuntapBase {
                 close: (fd: any, callback: () => void) => { callback() }
             }
         } as any);
-        this.writeStream.once('close', () => { //close two stream one by one
-            this.readStream.close();
+        // const readStreamEvents = ['open', 'close', 'data', 'end', 'error', 'readable', 'pause', 'ready', 'resume']
+        //transfer all events from writeStream to readStream
+        //except open
+        const writeStreamEvents = ['drain', 'error', 'finish', 'pipe', 'ready', 'unpipe', 'close', 'open']
+        writeStreamEvents.forEach((event) => {
+            this.writeStream.addListener(event, (...rests) => {
+                this.readStream.emit(event, ...rests);
+            })
         })
+
     }
     /**
      * release writeStreams, readStreams and the file descriptor.
      * @memberof TuntapBase
      */
     release(callback?: (err?: NodeJS.ErrnoException) => void) {
-        this.writeStream.close(callback);
+        this.writeStream.close(() => {
+            //close two stream one by one
+            this.readStream.close((error) => {
+                if (callback) {
+                    callback();
+                }
+            });
+        });
     };
     /**
      * many get methods, like ipv4, ipv6 ... 

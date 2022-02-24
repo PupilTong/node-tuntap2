@@ -4,3 +4,4 @@ index.json
 .nyc_output
 /coverage
 .vscode
+/dist/*

@@ -27,6 +27,7 @@ jobs:
         with:
           node-version: 16
           registry-url: https://registry.npmjs.org/
+      - run: npm build
       - run: npm ci
       - run: git config --global user.email "pupiltong@github.com"
       - run: git config --global user.name "pupilTong"

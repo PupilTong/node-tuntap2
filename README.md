@@ -7,7 +7,7 @@ a opensource, asynchronized, napi-based, business friendly tuntap device driver 
 [![Node.js Package](https://github.com/PupilTong/node-tuntap2/actions/workflows/npm-publish.yml/badge.svg)](https://github.com/PupilTong/node-tuntap2/actions/workflows/npm-publish.yml)
 ![](https://img.shields.io/badge/Coverage-93%25-83A603.svg?prefix=$coverage$)
 
-[![Package quality](https://packagequality.com/shield/yourpackage.svg)](https://packagequality.com/#?package=yourpackage)
+[![Package quality](https://packagequality.com/shield/tuntap2.svg)](https://packagequality.com/#?package=tuntap2)
 
 
 ## TL; DR

@@ -294,7 +294,30 @@ export class Tuntap extends TuntapBase implements TuntapI {
     addListener(event: 'pause', listener: () => void): this;
     addListener(event: 'readable', listener: () => void): this;
     addListener(event: 'resume', listener: () => void): this;
+    addListener(event: 'drain', listener: () => void): this;
+    addListener(event: 'pipe', listener: () => void): this;
+    addListener(event: 'ready', listener: () => void): this;
+    addListener(event: 'unpipe', listener: () => void): this;
+    addListener(event: 'open', listener: () => void): this;
     addListener(event: string | symbol, listener: (...args: any[]) => void): this;
+    /**
+     * 1. close
+     * 2. data
+     * 3. end
+     * 4. error
+     * 5. pause
+     * 6. readable
+     * 7. resume
+     * 8. drain
+     * 9. pipe
+     * 10. ready
+     * 11. unpipe
+     * 12. open
+     * @param {*} event
+     * @param {*} listener
+     * @return {*}  {this}
+     * @memberof Tuntap
+     */
     addListener(event: any, listener: any): this {
         this.readStream.addListener(event, listener);
         return this;
@@ -306,7 +329,33 @@ export class Tuntap extends TuntapBase implements TuntapI {
     emit(event: 'pause'): boolean;
     emit(event: 'readable'): boolean;
     emit(event: 'resume'): boolean;
+    emit(event: 'drain'): boolean;
+    emit(event: 'pipe'): boolean;
+    emit(event: 'ready'): boolean;
+    emit(event: 'unpipe'): boolean;
+    emit(event: 'open'): boolean;
     emit(event: string | symbol, ...args: any[]): boolean;
+    /**
+     *
+     * 1. close
+     * 2. data
+     * 3. end
+     * 4. error
+     * 5. pause
+     * 6. readable
+     * 7. resume
+     * 8. drain
+     * 9. pipe
+     * 10. ready
+     * 11. unpipe
+     * 12. open
+     *
+     * @param {*} event
+     * @param {*} [err]
+     * @param {...any[]} rest
+     * @return {*}  {boolean}
+     * @memberof Tuntap
+     */
     emit(event: any, err?: any, ...rest: any[]): boolean {
         return this.readStream.emit(event, err, ...rest);
     }
@@ -317,6 +366,11 @@ export class Tuntap extends TuntapBase implements TuntapI {
     on(event: 'pause', listener: () => void): this;
     on(event: 'readable', listener: () => void): this;
     on(event: 'resume', listener: () => void): this;
+    on(event: 'drain', listener: () => void): this;
+    on(event: 'pipe', listener: () => void): this;
+    on(event: 'ready', listener: () => void): this;
+    on(event: 'unpipe', listener: () => void): this;
+    on(event: 'open', listener: () => void): this;
     on(event: string | symbol, listener: (...args: any[]) => void): this;
     on(event: any, listener: any): this {
         this.readStream.on(event, listener);
@@ -329,7 +383,32 @@ export class Tuntap extends TuntapBase implements TuntapI {
     once(event: 'pause', listener: () => void): this;
     once(event: 'readable', listener: () => void): this;
     once(event: 'resume', listener: () => void): this;
+    once(event: 'drain', listener: () => void): this;
+    once(event: 'pipe', listener: () => void): this;
+    once(event: 'ready', listener: () => void): this;
+    once(event: 'unpipe', listener: () => void): this;
+    once(event: 'open', listener: () => void): this;
     once(event: string | symbol, listener: (...args: any[]) => void): this;
+    /**
+     *
+     * 1. close
+     * 2. data
+     * 3. end
+     * 4. error
+     * 5. pause
+     * 6. readable
+     * 7. resume
+     * 8. drain
+     * 9. pipe
+     * 10. ready
+     * 11. unpipe
+     * 12. open
+     *
+     * @param {*} event
+     * @param {*} listener
+     * @return {*}  {this}
+     * @memberof Tuntap
+     */
     once(event: any, listener: any): this {
         this.readStream.once(event, listener);
         return this;
@@ -341,7 +420,32 @@ export class Tuntap extends TuntapBase implements TuntapI {
     prependListener(event: 'pause', listener: () => void): this;
     prependListener(event: 'readable', listener: () => void): this;
     prependListener(event: 'resume', listener: () => void): this;
+    prependListener(event: 'drain', listener: () => void): this;
+    prependListener(event: 'pipe', listener: () => void): this;
+    prependListener(event: 'ready', listener: () => void): this;
+    prependListener(event: 'unpipe', listener: () => void): this;
+    prependListener(event: 'open', listener: () => void): this;
     prependListener(event: string | symbol, listener: (...args: any[]) => void): this;
+    /**
+     *
+     * 1. close
+     * 2. data
+     * 3. end
+     * 4. error
+     * 5. pause
+     * 6. readable
+     * 7. resume
+     * 8. drain
+     * 9. pipe
+     * 10. ready
+     * 11. unpipe
+     * 12. open
+     *
+     * @param {*} event
+     * @param {*} listener
+     * @return {*}  {this}
+     * @memberof Tuntap
+     */
     prependListener(event: any, listener: any): this {
         this.readStream.prependListener(event, listener);
         return this;
@@ -353,7 +457,32 @@ export class Tuntap extends TuntapBase implements TuntapI {
     prependOnceListener(event: 'pause', listener: () => void): this;
     prependOnceListener(event: 'readable', listener: () => void): this;
     prependOnceListener(event: 'resume', listener: () => void): this;
+    prependOnceListener(event: 'drain', listener: () => void): this;
+    prependOnceListener(event: 'pipe', listener: () => void): this;
+    prependOnceListener(event: 'ready', listener: () => void): this;
+    prependOnceListener(event: 'unpipe', listener: () => void): this;
+    prependOnceListener(event: 'open', listener: () => void): this;
     prependOnceListener(event: string | symbol, listener: (...args: any[]) => void): this;
+    /**
+     *
+     * 1. close
+     * 2. data
+     * 3. end
+     * 4. error
+     * 5. pause
+     * 6. readable
+     * 7. resume
+     * 8. drain
+     * 9. pipe
+     * 10. ready
+     * 11. unpipe
+     * 12. open
+     *
+     * @param {*} event
+     * @param {*} listener
+     * @return {*}  {this}
+     * @memberof Tuntap
+     */
     prependOnceListener(event: any, listener: any): this {
         this.readStream.prependOnceListener(event, listener);
         return this;
@@ -365,7 +494,32 @@ export class Tuntap extends TuntapBase implements TuntapI {
     removeListener(event: 'pause', listener: () => void): this;
     removeListener(event: 'readable', listener: () => void): this;
     removeListener(event: 'resume', listener: () => void): this;
+    removeListener(event: 'drain', listener: () => void): this;
+    removeListener(event: 'pipe', listener: () => void): this;
+    removeListener(event: 'ready', listener: () => void): this;
+    removeListener(event: 'unpipe', listener: () => void): this;
+    removeListener(event: 'open', listener: () => void): this;
     removeListener(event: string | symbol, listener: (...args: any[]) => void): this;
+    /**
+     *
+     * 1. close
+     * 2. data
+     * 3. end
+     * 4. error
+     * 5. pause
+     * 6. readable
+     * 7. resume
+     * 8. drain
+     * 9. pipe
+     * 10. ready
+     * 11. unpipe
+     * 12. open
+     *
+     * @param {*} event
+     * @param {*} listener
+     * @return {*}  {this}
+     * @memberof Tuntap
+     */
     removeListener(event: any, listener: any): this {
         this.readStream.removeListener(event, listener);
         return this;

@@ -151,4 +151,18 @@ export class TuntapBase {
         const ifIndex = tuntapAddon.tuntapGetIfIndex(this._ifName);
         tuntapAddon.tuntapSetIpv6(ifIndex, addr, prefix);
     }
+    
+    /**
+     * @deprecated Please use on('data',callback);
+     * @memberof TuntapBase
+     */
+    onReceive(){
+    }
+
+    /**
+     * @deprecated Please use write(chunk,callback);
+     * @memberof TuntapBase
+     */
+    writePacket(){
+    }
 }

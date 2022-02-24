@@ -5,10 +5,10 @@
   "main": "./dist/index.js",
   "types": "index.ts",
   "scripts": {
-    "install": "prebuild-install --runtime napi --tag-prefix '' || node-gyp rebuild; npx tsc --build; npm run coverage:badge",
+    "install": "prebuild-install --runtime napi --tag-prefix '' || node-gyp rebuild; npx tsc --build",
     "build": "node-gyp rebuild && npx tsc --build",
     "build:dev": "node-gyp rebuild --debug",
-    "test": "sudo nyc --reporter=json-summary  mocha tests/* ",
+    "test": "sudo nyc --reporter=json-summary  mocha tests/* && npm run coverage:badge",
     "coverage:badge": "coverage-badge-creator"
   },
   "author": "pupiltong",

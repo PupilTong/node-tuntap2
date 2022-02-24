@@ -30,7 +30,7 @@ import { Duplex} from "stream";
      * the mac address of this interface
      * @example
      * ```js
-     * this.mtu = '00:11:22:33:44:55';
+     * this.mac = '00:11:22:33:44:55';
      * ```
      * @type {string}
      * @memberof TuntapI

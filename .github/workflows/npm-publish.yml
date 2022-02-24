@@ -15,7 +15,7 @@ jobs:
       - uses: actions/setup-node@v2
         with:
           node-version: 16
-      - run: npm run build
+      - run: npm ci
 #       - run: sudo npm test
 
   publish-npm:
@@ -27,8 +27,8 @@ jobs:
         with:
           node-version: 16
           registry-url: https://registry.npmjs.org/
-      - run: npm run build
       - run: npm ci
+      - run: npm run build
       - run: git config --global user.email "pupiltong@github.com"
       - run: git config --global user.name "pupilTong"
       - run: npm version ${{github.event.release.tag_name}} 

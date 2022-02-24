@@ -28,8 +28,8 @@
     "vpn"
   ],
   "files": [
-    "./dist/*",
-    "./src/*",
+    "dist/*",
+    "src/*",
     "index.ts",
     "binding.gyp",
     "tsconfig.json"

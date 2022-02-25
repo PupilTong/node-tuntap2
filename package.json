@@ -42,9 +42,9 @@
     "prebuild-install": "^7.0.0"
   },
   "bugs": {
-    "url": "https://github.com/PupilTong/node-ether-xtoy/issues"
+    "url": "https://github.com/PupilTong/node-tuntap2/issues"
   },
-  "homepage": "https://github.com/PupilTong/node-ether-xtoy#readme",
+  "homepage": "https://github.com/PupilTong/node-tuntap2#readme",
   "binary": {
     "napi_versions": [
       3

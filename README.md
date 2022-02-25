@@ -144,6 +144,12 @@ The tuntap object supports Node.js `Duplex` interface. However, almost all strea
 
 The writing and reading of tuntap is based on nodejs `fs` and `readingStream`. This means these methods is running on libuv threads pool. Please set the threads pool size properly for your application.
 
+## Test
+
+```bash
+npm test
+```
+
 ## Contribute
 
 Please feel free to create issues, Prs and tell me your ideas! 

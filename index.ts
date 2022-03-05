@@ -100,4 +100,4 @@ const tuntap = function(options: any){
     }
     return device;
 }
-export = {Tap, Tun, tuntap};
+export {Tap, Tun, tuntap};

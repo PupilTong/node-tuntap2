@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "description": "",
   "main": "./dist/index.js",
-  "types": "index.ts",
+  "types": "./dist/src/ts/index.d.ts",
   "scripts": {
     "install": "prebuild-install --runtime napi --tag-prefix '' || node-gyp rebuild",
     "build": "node-gyp rebuild && npx tsc --build",

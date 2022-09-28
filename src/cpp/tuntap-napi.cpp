@@ -22,15 +22,17 @@
 
 static Napi::Value tuntapInit(const Napi::CallbackInfo& info) {
     const Napi::Env& env = info.Env();
-    if (info.Length() != 2) {
+    if (info.Length() != 3) {
         throw Napi::TypeError::New(env, "Wrong number of arguments");
     }
-    if (!(info[0].IsNumber() && info[1].IsBoolean())) {
+    if (!(info[0].IsNumber() && info[1].IsBoolean() && info[2].IsBoolean())) {
         throw Napi::TypeError::New(env, "Wrong argument(s)!");
     }
     char name[64];
     int result = init(info[0].As<Napi::Number>().Int32Value(),
-                      info[1].As<Napi::Boolean>().Value(), name);
+                      info[1].As<Napi::Boolean>().Value(), 
+                      name,
+                      info[2].As<Napi::Boolean>().Value());
     if (result == -1) {
         throwErrnoError(env, errno);
     }

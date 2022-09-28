@@ -7,8 +7,8 @@ import {Tuntap} from './src/ts/Tuntap'
  * @extends {TuntapB}
  */
  class Tun extends Tuntap {
-    constructor() {
-        super('tun');
+    constructor(disablePacketInfo: boolean = true) {
+        super('tun', disablePacketInfo);
     }
     /**
      * setting the mac of a Tun interface is illegal as tun devices is running on layer 3
@@ -28,8 +28,8 @@ import {Tuntap} from './src/ts/Tuntap'
  * @extends {TuntapB}
  */
  class Tap extends Tuntap {
-    constructor() {
-        super('tap');
+    constructor(disablePacketInfo: boolean = true) {
+        super('tap', disablePacketInfo);
     }
 }
 

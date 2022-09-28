@@ -3,7 +3,7 @@ export interface tuntap2AddonTypes {
      * set up the file descriptor to be as an tun/tap device.
      * @memberof tuntap2AddonTypes
      */
-    tuntapInit: (fd: number, isTap: boolean) => string;
+    tuntapInit: (fd: number, isTap: boolean, disablePacketInfo: boolean) => string;
     /**
      *
      * get `ifr_flags` of the interface.

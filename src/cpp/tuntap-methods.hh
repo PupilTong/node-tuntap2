@@ -1,6 +1,6 @@
 #ifndef tuntap_methods
 #define tuntap_methods
-int init(int fd, bool isTap, char* name);
+int init(int fd, bool isTap, char* name, bool disablePacketInfo);
 int getFlags(char* name, int* flag);
 int setMac(char* name, char* mac);
 int setUp(char* name);

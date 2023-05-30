@@ -1,5 +1,5 @@
 
-import {Tuntap} from './src/ts/Tuntap'
+import {Tuntap} from './src/ts/Tuntap.js'
 // this file only contains wrapper class for tuntap class.
 /**
  * Tun interface, a Layer 2 virtual interface.

@@ -1,10 +1,13 @@
-import { TuntapBase } from './TuntapBase'
-import { TuntapI } from './TuntapI';
+import { TuntapBase } from './TuntapBase.js'
+import { TuntapI } from './TuntapI.js';
 
 export class Tuntap extends TuntapBase implements TuntapI {
-    writableNeedDrain: boolean;
-    closed: boolean;
-    errored: Error;
+
+    writableNeedDrain: boolean = false;
+
+    closed: boolean = false;
+
+    errored: Error | null = null;
 
     /**
      * Return the value of `highWaterMark` 
@@ -78,7 +81,7 @@ export class Tuntap extends TuntapBase implements TuntapI {
      * @return {*}  {void}
      * @memberof Tuntap
      */
-    _write(chunk: any, encoding: BufferEncoding, callback: (error?: Error) => void): void {
+    _write(chunk: any, encoding: BufferEncoding, callback: (error?: Error|null) => void): void {
         return this.writeStream._write(chunk, encoding, callback);
     }
     /**
@@ -113,7 +116,7 @@ export class Tuntap extends TuntapBase implements TuntapI {
      * @param {(error?: Error) => void} callback
      * @memberof Tuntap
      */
-    _final(callback: (error?: Error) => void): void {
+    _final(callback: (error?: Error|null) => void): void {
         this.writeStream._final(callback);
     }
     /**
@@ -196,13 +199,13 @@ export class Tuntap extends TuntapBase implements TuntapI {
     get readableDidRead(): boolean {
         return this.readStream.readableDidRead;
     }
-    get readableEncoding(): BufferEncoding {
+    get readableEncoding(): BufferEncoding|null {
         return this.readStream.readableEncoding;
     }
     get readableEnded(): boolean {
         return this.readStream.readableEnded;
     }
-    get readableFlowing(): boolean {
+    get readableFlowing(): boolean|null {
         return this.readStream.readableFlowing;
     }
     get readableHighWaterMark(): number {

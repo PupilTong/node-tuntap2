@@ -1,3 +1,6 @@
+import { createRequire } from 'node:module';
+const require = createRequire(import.meta.url);
+
 export interface tuntap2AddonTypes {
     /**
      * set up the file descriptor to be as an tun/tap device.

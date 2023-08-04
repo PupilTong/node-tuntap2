@@ -85,7 +85,7 @@ export class Tuntap extends TuntapBase implements TuntapI {
         return this.writeStream._write(chunk, encoding, callback);
     }
     /**
-     * This methods is not allowed for tuntap.
+     * These methods are not allowed for tuntap.
      * @throws `'Method not implemented.'`
      *
      * @inheritdoc
@@ -572,5 +572,9 @@ export class Tuntap extends TuntapBase implements TuntapI {
     }
     get writableFinished(): boolean {
         return this.writeStream.writableFinished;
+    }
+
+    compose<T extends NodeJS.ReadableStream>(stream: ((source: any) => void) | T | Iterable<T> | AsyncIterable<T>, options?: { signal: AbortSignal; } | undefined): T {
+        throw new Error('Method not implemented.');
     }
 }

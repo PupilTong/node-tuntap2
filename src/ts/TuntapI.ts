@@ -12,6 +12,7 @@ import { Duplex} from "stream";
      * @since 0.0.1
      */
     readonly name: string;
+
     /**
      * returns `true` if this is a Tap device
      * @type {boolean}
@@ -19,6 +20,7 @@ import { Duplex} from "stream";
      * @since 0.0.1
      */
     readonly isTap: boolean;
+
     /**
      * returns `true` if this is a Tun device
      * @type {boolean}
@@ -26,6 +28,7 @@ import { Duplex} from "stream";
      * @since 0.0.1
      */
     readonly isTun: boolean;
+
     /**
      * the mac address of this interface
      * @example
@@ -37,6 +40,7 @@ import { Duplex} from "stream";
      * @since 0.1.1
      */
     mac: string;
+
     /**
      * mtu of this interface
      * @example
@@ -48,6 +52,7 @@ import { Duplex} from "stream";
      * @since 0.0.1
      */
     mtu: number;
+
     /**
      * ipv4 address/subnet in cidr format of this interface
      * @example
@@ -59,6 +64,7 @@ import { Duplex} from "stream";
      * @since 0.0.1
      */
     ipv4: string;
+
     /**
      * ipv6 address/subnet in cidr format of this interface
      * @example
@@ -70,6 +76,7 @@ import { Duplex} from "stream";
      * @since 0.0.1
      */
     ipv6: string;
+
     /**
      * get/set the interface to up/down status
      * @example
@@ -81,6 +88,7 @@ import { Duplex} from "stream";
      * @since 0.0.1
      */
     isUp: boolean;
+
     /**
      * release this interface
      * @memberof TuntapI

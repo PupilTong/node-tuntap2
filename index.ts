@@ -1,10 +1,11 @@
-
 import {Tuntap} from './src/ts/Tuntap.js'
+
 // this file only contains wrapper class for tuntap class.
+
 /**
  * Tun interface, a Layer 2 virtual interface.
  * @class Tun
- * @extends {TuntapB}
+ * @extends {Tuntap}
  */
  class Tun extends Tuntap {
     constructor(disablePacketInfo: boolean = true) {
@@ -25,7 +26,7 @@ import {Tuntap} from './src/ts/Tuntap.js'
  * Tap interface, a Layer 2 virtual interface.
  * The tap device allows 
  * @class Tap
- * @extends {TuntapB}
+ * @extends {Tuntap}
  */
  class Tap extends Tuntap {
     constructor(disablePacketInfo: boolean = true) {
@@ -59,14 +60,19 @@ const tuntap = function(options: any){
     if(options.name){
         throw `setting a name of a tuntap device is not supported`
     }
+
     if(options.type!='tun' && options.type != 'tap'){
         throw `illegal type ${options.type}`
     }
+
     const device = new Tuntap(options.type);
+
     if(options.mtu){
         device.mtu = options.mtu;
     }
+
     let mask = 32;
+
     if(options.mask){
         const maskSplited = options.mask.split('.');
         if(maskSplited.length!=4){
@@ -76,20 +82,21 @@ const tuntap = function(options: any){
         maskSplited.forEach(((segment: string) => {
             let numberSegment = parseInt(segment) & 0xff;
             let hasOne = false;
-            for(let i=0;i<8;i++){
-                if(numberSegment&0x01){
+
+            for(let i=0;i<8;i++) {
+                if(numberSegment & 0x01) {
                     hasOne = true;
                     mask++;
                 }
-                else{
-                    if(hasOne==true){
-                        throw `illegal netmask`;
-                    }
+                else if(hasOne){
+                    throw `illegal netmask`;
                 }
+
                 numberSegment = numberSegment>>1;
             }
         }));
-    } 
+    }
+
     if(options.addr){
         let addr = [options.addr, mask].join('/');
         device.ipv4 = addr;

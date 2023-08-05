@@ -2,6 +2,9 @@ import { TuntapBase } from './TuntapBase'
 import { TuntapI } from './TuntapI';
 
 export class Tuntap extends TuntapBase implements TuntapI {
+    writableNeedDrain: boolean;
+    closed: boolean;
+    errored: Error;
 
     /**
      * Return the value of `highWaterMark` 

@@ -5,3 +5,4 @@ index.json
 /coverage
 .vscode
 /dist/*
+.idea

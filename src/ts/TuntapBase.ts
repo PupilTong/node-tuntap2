@@ -1,4 +1,4 @@
-import tuntapAddon from './Tuntap2Addon';
+import tuntapAddon from './Tuntap2Addon.js';
 import * as fs from 'fs';
 import * as os from 'os';
 import * as jmespath from 'jmespath';
@@ -21,11 +21,11 @@ export class TuntapBase {
      * @memberof TuntapBase
      * @since 0.0.1
      */
-    constructor(mode: 'tun' | 'tap') {
+    constructor(mode: 'tun' | 'tap', disablePacketInfo = true) {
         this._deviceMode = mode;
         const fd = fs.openSync(`/dev/net/tun`, 'r+');
         this._fd = fd;
-        this._ifName = tuntapAddon.tuntapInit(this._fd, mode == 'tap');
+        this._ifName = tuntapAddon.tuntapInit(this._fd, mode == 'tap', disablePacketInfo);
         this.readStream = fs.createReadStream('', {
             fd: this._fd,
             autoClose: true,

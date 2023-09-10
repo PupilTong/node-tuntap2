@@ -13,7 +13,7 @@
 #include <string.h>
 #include <unistd.h>
 
-int init(int fd, bool isTap, char* name) {
+int init(int fd, bool isTap, char* name, bool disablePacketInfo) {
     struct ifreq ifr;
     (void)memset(&ifr, '\0', sizeof(ifr));
     if (isTap) {
@@ -23,7 +23,9 @@ int init(int fd, bool isTap, char* name) {
         ifr.ifr_flags = IFF_TUN;
     }
 
-    ifr.ifr_flags |= IFF_NO_PI;
+    if(disablePacketInfo)
+        ifr.ifr_flags |= IFF_NO_PI;
+ 
     if (ioctl(fd, TUNSETIFF, &ifr) < 0) {
         return -1;
     }   
